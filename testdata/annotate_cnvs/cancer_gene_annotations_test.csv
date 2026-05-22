@@ -1,0 +1,6 @@
+gene,prefix,type,comment
+TP53,PANCANCER,somatic,known_tumor_suppressor
+BRCA2,PANCANCER,somatic,DNA_repair_gene
+EGFR,PANCANCER,somatic,frequently_amplified
+BRCA1,PANCANCER,germline,hereditary_risk
+TP53,PANCANCER,germline,Li-Fraumeni_syndrome
