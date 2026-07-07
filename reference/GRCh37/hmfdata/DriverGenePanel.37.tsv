@@ -1,0 +1,2 @@
+gene	reportMissenseAndInframe	reportNonsense	reportSplice	reportDeletion	reportDisruption	reportAmplification	reportSomaticHotspot	reportGermlineVariant	reportGermlineHotspot	likelihoodType	reportGermlineDisruption	reportGermlineDeletion	additionalReportedTranscripts
+TEST_GENE_37	TRUE	TRUE	TRUE	TRUE	TRUE	FALSE	TRUE	NONE	NONE	TSG	NONE	NONE	
