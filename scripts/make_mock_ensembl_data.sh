@@ -15,15 +15,16 @@
 # so real records are copied verbatim rather than synthesized.
 #
 # Usage (from the test-data repo root):
-#   bash scripts/make_mock_ensembl_data.sh
-# Input:  reference/ensembl_data/{ensembl_gene_data,ensembl_trans_exon_data,
-#                                  ensembl_trans_splice_data,ensembl_protein_features}.csv
+#   bash scripts/make_mock_ensembl_data.sh [SRC_ENSEMBL_DATA_DIR]
+# Input:  full HMF ensembl_data cache (5 CSVs: gene_data, trans_exon_data,
+#         trans_splice_data, trans_amino_acids, protein_features). Defaults to the
+#         v2.3.0 resources bundle; pass a different dir as the first argument.
 # Output: reference/GRCh37/ensembl_data.tar.gz  (top-level dir: ensembl_data/)
 # -----------------------------------------------------------------------------
 
 set -euo pipefail
 
-SRC=reference/ensembl_data
+SRC="${1:-$HOME/Documents/Projects/nf-autoseq/hmf_pipeline_resources.37_v2.3.0--2/common/ensembl_data}"
 OUTDIR=reference/GRCh37
 BUILD="$OUTDIR/ensembl_data"
 
@@ -35,8 +36,8 @@ awk -F, 'NR>1 && ( (($3=="1"||$3=="2"||$3=="3"||$3=="X") && $6+0<=200000) \
                    || ($3=="11" && $6+0<=3696) ) {print $1}' \
     "$SRC/ensembl_gene_data.csv" | sort -u > "$BUILD/.geneids"
 
-# 2. gene / trans_exon / trans_splice: keep header + rows for the selected genes.
-for f in ensembl_gene_data ensembl_trans_exon_data ensembl_trans_splice_data; do
+# 2. Files keyed by GeneId (col 1): keep header + rows for the selected genes.
+for f in ensembl_gene_data ensembl_trans_exon_data ensembl_trans_splice_data ensembl_trans_amino_acids; do
     head -1 "$SRC/$f.csv" > "$BUILD/$f.csv"
     awk -F, 'NR==FNR{g[$1]=1; next} FNR>1 && ($1 in g)' \
         "$BUILD/.geneids" "$SRC/$f.csv" >> "$BUILD/$f.csv"
