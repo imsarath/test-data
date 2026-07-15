@@ -16,7 +16,13 @@
 #   target_bed_file, chromlength, ranges, date, samples, target_template,
 #   allcounts, allgenes, allexons, cancergenes_clinseq
 #
-# Usage:  Rscript scripts/make_mock_jumble_reference.R
+# Run inside the Jumble container (not local R) so the embedded GRanges class
+# stamps match runtime — else jumble-run.R fails re-serializing with
+# "unable to find required package 'Seqinfo'".
+#
+# Usage (from test-data repo root):
+#   docker run --rm -v "$PWD":/work -w /work --entrypoint Rscript \
+#     <jumble-container> scripts/make_mock_jumble_reference.R
 # Output: reference/GRCh37/targets/test_panel.bed.reference.RDS
 # -----------------------------------------------------------------------------
 
