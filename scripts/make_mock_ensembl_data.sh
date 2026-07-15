@@ -34,7 +34,16 @@ mkdir -p "$BUILD"
 awk -F, 'NR>1 && ( (($3=="1"||$3=="2"||$3=="3"||$3=="X") && $6+0<=200000) \
                    || ($3=="8"  && $6+0<=1282) \
                    || ($3=="11" && $6+0<=3696) ) {print $1}' \
-    "$SRC/ensembl_gene_data.csv" | sort -u > "$BUILD/.geneids"
+    "$SRC/ensembl_gene_data.csv" > "$BUILD/.geneids"
+
+# Plus genes SAGE always loads at startup regardless of the panel: the HLA genes
+# on chr6. SAGE's HlaCommon.populateGeneData fetches the chr6 gene list and NPEs
+# if it is absent. Their coordinates (~chr6:29-33 Mb) are never read because the
+# test panel is chr1-only, so chr6 not being in the test genome is fine.
+awk -F, 'NR>1 && ($2=="HLA-A"||$2=="HLA-B"||$2=="HLA-C"||$2=="HLA-DQA1"||$2=="HLA-DQB1"||$2=="HLA-DRB1") {print $1}' \
+    "$SRC/ensembl_gene_data.csv" >> "$BUILD/.geneids"
+
+sort -u -o "$BUILD/.geneids" "$BUILD/.geneids"
 
 # 2. Files keyed by GeneId (col 1): keep header + rows for the selected genes.
 for f in ensembl_gene_data ensembl_trans_exon_data ensembl_trans_splice_data ensembl_trans_amino_acids; do
