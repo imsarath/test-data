@@ -47,6 +47,9 @@ chromlength <- c(
 )
 
 # --- Bin layout --------------------------------------------------------------
+# The on-target region (test_panel: 1:132700-139738, TEST_GENE_37).
+tgt_region <- list(chr = "1", start = 132700L, end = 139738L)
+
 # Background (off-target) bins tile contigs 1/2/3/X in 10 kb windows.
 bg_contigs   <- c("1", "2", "3", "X")
 bg_bin_width <- 10000L
@@ -54,6 +57,16 @@ background <- rbindlist(lapply(bg_contigs, function(chr) {
     starts <- seq(1L, as.integer(chromlength[[chr]]) - bg_bin_width + 1L, by = bg_bin_width)
     data.table(chromosome = chr, start = starts, end = starts + bg_bin_width - 1L, is_target = FALSE)
 }))
+
+# Drop background bins overlapping the on-target region. Real jumble references keep
+# target and background bins disjoint; letting the 10 kb background bin covering
+# 1:130001-140000 overlap the 200 bp target bins yields a .cnr with overlapping
+# intervals. PureCN's .checkIntervals() reacts to overlaps by calling
+# GenomicRanges::reduce(), which strips the average.coverage column and crashes
+# downstream getSexFromCoverage() (split() on a NULL vector).
+background <- background[!(chromosome == tgt_region$chr &
+                           start <= tgt_region$end &
+                           end   >= tgt_region$start)]
 
 # Target (on-target) bins across the test_panel region 1:132700-139738.
 tgt_bin_width <- 200L
