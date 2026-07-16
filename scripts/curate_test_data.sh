@@ -108,6 +108,15 @@ write_singleton_bed_gz() {
     printf "%s\t%s\t%s\t%s\n" "${chrom}" "${start}" "${end}" "${name}" | "${BGZIP}" -c > "${out}"
 }
 
+# Minimal GRIPSS single-breakend PON BED.gz with one entry.
+# GRIPSS PonSglRegion.fromBedRecord reads 6 columns: Chr, PosBegin, PosEnd,
+# Unknown, PonCount(int), Orientation(+/-). A 4-column BED crashes GRIPSS with
+# ArrayIndexOutOfBounds at items[5].
+write_singleton_sgl_pon_gz() {
+    local out="$1" chrom="$2" start="$3" end="$4"
+    printf "%s\t%s\t%s\t%s\t%s\t%s\n" "${chrom}" "${start}" "${end}" "." "1" "+" | "${BGZIP}" -c > "${out}"
+}
+
 # Minimal plain BED with one entry.
 write_singleton_bed() {
     local out="$1" chrom="$2" start="$3" end="$4" name="$5"
@@ -249,8 +258,8 @@ synthesize_genome_resources() {
     # For GRCh38, reuse the same file (it's tool config, not genome-specific).
     cp "${REF_ROOT}/GRCh37/gridss/gridss.properties" "${gridss_dir}/gridss.properties" 2>/dev/null \
         || true
-    write_singleton_bed_gz "${gridss_dir}/sgl_pon.${ver}.bed.gz" \
-        "${anchor_chrom}" "${anchor_start}" "${anchor_end}" "sgl_placeholder"
+    write_singleton_sgl_pon_gz "${gridss_dir}/sgl_pon.${ver}.bed.gz" \
+        "${anchor_chrom}" "${anchor_start}" "${anchor_end}"
     write_singleton_bedpe_gz "${gridss_dir}/sv_pon.${ver}.bedpe.gz" "${anchor_chrom}" "${anchor_start}"
     write_singleton_bedpe "${gridss_dir}/known_fusions.${ver}.bedpe" "${anchor_chrom}" "${anchor_start}"
     write_singleton_bed "${gridss_dir}/sv_prep_blacklist.${ver}.bed" \
