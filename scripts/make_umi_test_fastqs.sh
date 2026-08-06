@@ -14,10 +14,11 @@
 #     chain, but the pipeline enters at FASTQ.
 #
 # The sarek tiny FASTQs already used by `-profile test` do land in the panel
-# (1:132680-139758), so the UMI reads are derived from those instead. Every
-# input read pair is emitted twice, once per strand of the source molecule,
-# with an inline 3 bp UMI plus a 2 bp fixed spacer added to the start of each
-# read - the IDT xGen Duplex-Seq layout, i.e. read structure `3M2S+T 3M2S+T`:
+# (1:132680-139758), so the UMI reads are derived from those instead. Each
+# input read pair is turned into MOLECULES independent source molecules, each
+# sequenced from both strands, with an inline 3 bp UMI plus a 2 bp fixed spacer
+# added to the start of each read - the IDT xGen Duplex-Seq layout, i.e. read
+# structure `3M2S+T 3M2S+T`:
 #
 #   input pair  (r1, r2)          UMIs (A, B) drawn from a fixed 16-UMI pool
 #   AB strand   R1 = A + s + r1   R2 = B + s + r2
@@ -25,9 +26,15 @@
 #
 # Swapping both the reads and the UMIs makes the second pair look like the
 # opposite strand of the same molecule, which is what fgbio GroupReadsByUmi
-# `--strategy paired` needs to build a duplex (AB/BA) family. Each family then
-# has one read per strand, so CallDuplexConsensusReads emits a consensus that
-# survives FilterConsensusReads' `--require-single-strand-agreement`.
+# `--strategy paired` needs to build a duplex (AB/BA) family.
+#
+# Each molecule is sequenced READS_PER_STRAND times per strand so that the
+# duplex families have a realistic size instead of a single read on either
+# side. Note that 23% of the bases in the sarek tiny reads are below Q30, so
+# `-profile test_umi` lowers `min_baseq` to fgbio's own default of 10 - at the
+# pipeline default of 30 those bases are ignored by CallDuplexConsensusReads,
+# come back as N, and FilterConsensusReads then drops every consensus read with
+# more than 20% no-calls, which takes panel coverage from ~30x down to ~9x.
 #
 # UMIs are assigned deterministically (round-robin over the pool, offset per
 # file) so re-running the script reproduces byte-identical FASTQs and the
@@ -47,16 +54,19 @@ REPO_URL="https://raw.githubusercontent.com/imsarath/test-data/refs/heads/main"
 SRC_DIR="testdata/fastqs/GRCh37"
 OUT_DIR="testdata/fastqs/GRCh37_umi"
 
+MOLECULES=1        # independent source molecules per input read pair
+READS_PER_STRAND=2 # reads per strand of each molecule
+
 mkdir -p "${OUT_DIR}/tumor" "${OUT_DIR}/normal" testdata/csv
 
 add_umis() {
     local r1_in=$1 r2_in=$2 r1_out=$3 r2_out=$4 offset=$5
 
-    python3 - "$r1_in" "$r2_in" "$r1_out" "$r2_out" "$offset" <<'PY'
+    python3 - "$r1_in" "$r2_in" "$r1_out" "$r2_out" "$offset" "$MOLECULES" "$READS_PER_STRAND" <<'PY'
 import gzip
 import sys
 
-r1_in, r2_in, r1_out, r2_out, offset = sys.argv[1:6]
+r1_in, r2_in, r1_out, r2_out, offset, molecules, reads_per_strand = sys.argv[1:8]
 
 # Pool of 3 bp UMIs forming a distance-2 code (third base is the checksum of
 # the first two), so no two UMIs are within GroupReadsByUmi's default --edits 1
@@ -89,19 +99,29 @@ def write(handle, name, umi, seq, qual):
 
 
 offset = int(offset)
+molecules = int(molecules)
+reads_per_strand = int(reads_per_strand)
+
 with gzip.open(r1_out, "wt", compresslevel=6) as out1, gzip.open(r2_out, "wt", compresslevel=6) as out2:
     pairs = zip(records(r1_in), records(r2_in))
     for i, ((name, seq1, qual1), (_, seq2, qual2)) in enumerate(pairs):
-        umi_a = POOL[(2 * i + offset) % len(POOL)]
-        umi_b = POOL[(2 * i + offset + 1) % len(POOL)]
+        for molecule in range(molecules):
+            # consecutive pool entries, so the two strands of a molecule never
+            # share a UMI and neighbouring molecules never collide
+            index = 2 * (molecules * i + molecule) + offset
+            umi_a = POOL[index % len(POOL)]
+            umi_b = POOL[(index + 1) % len(POOL)]
 
-        # AB strand: the read pair as sequenced
-        write(out1, f"{name}:AB", umi_a, seq1, qual1)
-        write(out2, f"{name}:AB", umi_b, seq2, qual2)
+            for copy in range(reads_per_strand):
+                tag = f"{name}:M{molecule}:{copy}"
 
-        # BA strand: the same molecule read from the other strand
-        write(out1, f"{name}:BA", umi_b, seq2, qual2)
-        write(out2, f"{name}:BA", umi_a, seq1, qual1)
+                # AB strand: the read pair as sequenced
+                write(out1, f"{tag}:AB", umi_a, seq1, qual1)
+                write(out2, f"{tag}:AB", umi_b, seq2, qual2)
+
+                # BA strand: the same molecule read from the other strand
+                write(out1, f"{tag}:BA", umi_b, seq2, qual2)
+                write(out2, f"{tag}:BA", umi_a, seq1, qual1)
 PY
 }
 
