@@ -1,0 +1,2 @@
+gene,chromosome,start,end,band,n_bins,exonic_bins,depth,segments,segmented_median,segmented_min,segmented_max,segmented_armlevel,snps,maf,smooth_maf
+TEST_GENE_37,1,132700,139738,"",31,17,21,1,0.993,0.993,0.993,,0,,

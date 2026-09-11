@@ -1,0 +1,2 @@
+"sample","bam_file","reference_file","snp_vcf","somatic_vcf","median_target_count","gc_bias","noise","waviness","het_snps","hom_snps","sex","contamination","somatic_snvs","somatic_indels","MSI_mono","MSI_di","MSI_tri","TMB_snv","TMB_indel","TMB_score"
+"NORMAL","NORMAL_dedup.bam","test_panel.bed.reference.RDS",,,21,-0.38,0.24,0.21,,,,,,,,,,,,
