@@ -1,0 +1,78 @@
+##fileformat=VCFv4.2
+##FILTER=<ID=PASS,Description="All filters passed">
+##FILTER=<ID=dedupIndel,Description="Variant duplicate SNV/MNV vs INDEL">
+##FILTER=<ID=dedupMatch,Description="Variant duplicate with different read contexts">
+##FILTER=<ID=dedupMixedGermlineSomatic,Description="Variant duplicate mixed somatic/germline">
+##FILTER=<ID=dedupMnv,Description="Filter MNV duplicate">
+##FILTER=<ID=dedupSnvMnv,Description="Variant duplicate MNV vs SNV">
+##FILTER=<ID=fragmentLength,Description="Alt max fragment length well below average non-alt">
+##FILTER=<ID=fragmentStrandBias,Description="Variant exceeds fragment strand bias limit">
+##FILTER=<ID=jitter,Description="Jitter filter">
+##FILTER=<ID=mapQualRefAltDiff,Description="Alt support map qual well below ref support">
+##FILTER=<ID=maxEdgeDistance,Description="Variant close to read edge">
+##FILTER=<ID=maxGermlineAltSupport,Description="Excess germline alt support">
+##FILTER=<ID=maxGermlineRelQual,Description="Excess germline relative qual">
+##FILTER=<ID=maxGermlineVAF,Description="Excess germline VAF">
+##FILTER=<ID=minAvgRawBaseQual,Description="Variant average raw base quality below limit">
+##FILTER=<ID=minFragmentCoords,Description="Insufficient fragment coordinate variation">
+##FILTER=<ID=minGermlineDepth,Description="Insufficient germline depth">
+##FILTER=<ID=minMQF,Description="Insufficient map qual factor">
+##FILTER=<ID=minTumorQual,Description="Insufficient tumor quality">
+##FILTER=<ID=minTumorSupport,Description="Insufficient tumor strong support">
+##FILTER=<ID=minTumorVAF,Description="Insufficient tumor VAF">
+##FILTER=<ID=readStrandBias,Description="Variant exceeds read strand bias limit">
+##FILTER=<ID=realignFrequency,Description="Support is predominantly realigned">
+##FORMAT=<ID=ABQ,Number=2,Type=Integer,Description="Average calculated base quality (all,alt)">
+##FORMAT=<ID=AD,Number=R,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
+##FORMAT=<ID=AED,Number=2,Type=Integer,Description="Average read edge distance [alt,total]">
+##FORMAT=<ID=AF,Number=1,Type=Float,Description="Allelic frequency calculated from read context counts as (Full + Partial + Core + Realigned + Alt) / Coverage">
+##FORMAT=<ID=AMBQ,Number=1,Type=Integer,Description="Average modified map quality">
+##FORMAT=<ID=AMMQ,Number=1,Type=Integer,Description="Average alt support modified map quality">
+##FORMAT=<ID=AMQ,Number=2,Type=Integer,Description="Average map quality count (all,alt)">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth (reads with MQ=255 or with bad mates are filtered)">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=MUC,Number=1,Type=Integer,Description="Min unique fragment coordinates in alt reads">
+##FORMAT=<ID=RABQ,Number=1,Type=Integer,Description="Average calculated raw base quality in alt reads">
+##FORMAT=<ID=RC_CNT,Number=6,Type=Integer,Description="Read context counts [Full, PartialCore, Core, Realigned, Reference, Total]">
+##FORMAT=<ID=RC_IPC,Number=1,Type=Integer,Description="Read context improper pair count">
+##FORMAT=<ID=RC_JIT,Number=3,Type=Integer,Description="Read context jitter [Shortened, Lengthened, QualityPenalty]">
+##FORMAT=<ID=RC_QUAL,Number=6,Type=Integer,Description="Read context quality [Full, PartialCore, Core, Realigned, Reference, Total]">
+##FORMAT=<ID=RSB,Number=2,Type=Float,Description="Read strand bias - percentage of forward-orientation reads (ref,alt)">
+##FORMAT=<ID=SAC,Number=1,Type=Integer,Description="Simple alt match count">
+##FORMAT=<ID=SB,Number=2,Type=Float,Description="Fragment strand bias - percentage of forward-orientation fragments (ref,alt)">
+##FORMAT=<ID=UMI_CNT,Number=6,Type=Integer,Description="UMI type counts [TotalNone,TotalSingle,TotalDualStrand,AltNone,AltSingle,AltDualStrand]">
+##INFO=<ID=LPS,Number=.,Type=Integer,Description="Local Phase Set">
+##INFO=<ID=LPS_RC,Number=.,Type=Integer,Description="Local Phase Set Read Count">
+##INFO=<ID=MED,Number=1,Type=Integer,Description="Max read edge distance">
+##INFO=<ID=MH,Number=1,Type=String,Description="Microhomology">
+##INFO=<ID=MQF,Number=1,Type=Float,Description="Map qual heuristic as used in min tumor quality filter">
+##INFO=<ID=MSG,Number=1,Type=Integer,Description="Mixed Somatic and Germline variants">
+##INFO=<ID=NEARBY_INDEL,Number=0,Type=Flag,Description="Variant has an INDEL overlapping its core">
+##INFO=<ID=RC_INFO,Number=1,Type=String,Description="Read context: alignment start, variant index, left-flank, core, right-flank, read cigar">
+##INFO=<ID=RC_MH,Number=1,Type=String,Description="Microhomology from read context">
+##INFO=<ID=RC_NM,Number=1,Type=Integer,Description="Minimum number of events in read">
+##INFO=<ID=RC_REPC,Number=1,Type=Integer,Description="Repeat count from read context">
+##INFO=<ID=RC_REPS,Number=1,Type=String,Description="Repeat sequence from read context">
+##INFO=<ID=REP_C,Number=1,Type=Integer,Description="Repeat sequence count">
+##INFO=<ID=REP_S,Number=1,Type=String,Description="Repeat sequence">
+##INFO=<ID=TIER,Number=1,Type=String,Description="Tier: [HOTSPOT, PANEL, HIGH_CONFIDENCE, LOW_CONFIDENCE]">
+##INFO=<ID=TINC_RECOVERED,Number=0,Type=Flag,Description="Variant recovered from germline filters by TINC detection">
+##INFO=<ID=TNC,Number=1,Type=String,Description="Tri-nucleotide context">
+##INFO=<ID=TQP,Number=1,Type=Float,Description="Probability as used in min tumor quality filter">
+##contig=<ID=1,length=200000>
+##contig=<ID=2,length=200000>
+##contig=<ID=3,length=200000>
+##contig=<ID=8,length=1282>
+##contig=<ID=11,length=3696>
+##contig=<ID=X,length=200000>
+##sageVersion=4.1
+##bcftools_filterVersion=1.23.1+htslib-1.23.1
+##bcftools_filterCommand=filter --output TUMOR_NORMAL_sage_pass_only.vcf --threads 4 TUMOR.sage.somatic.vcf.gz; Date=Mon Oct 26 11:16:35 2026
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	NORMAL	TUMOR
+1	135465	.	C	T	200	maxGermlineRelQual;maxGermlineVAF	MED=47;MQF=33.44;RC_INFO=135453-12-CCACTTCCAG-GCTGA-CTTGAGGACG-25M;RC_NM=1;TIER=PANEL;TNC=CCG;TQP=0	GT:ABQ:AD:AED:AF:AMBQ:AMMQ:AMQ:DP:MUC:RABQ:RC_CNT:RC_IPC:RC_JIT:RC_QUAL:RSB:SAC:SB:UMI_CNT	./.:35,35:2,3:26,31:0.6:23:60:60,60:5:3:34:3,0,0,0,2,5:0:0,0:68,0,0,0,47,115:1,0:0:0,0.333:5,0,0,3,0,0	./.:33,34:1,9:23,26:0.9:22:58:60,60:10:3:33:9,0,0,0,1,10:0:0,0:195,0,0,0,4,199:0,0.111:0:0,0.444:10,0,0,9,0,0
+1	136586	.	T	G	41	minAvgRawBaseQual;minMQF	MED=16;MQF=-15.71;RC_INFO=136573-13-TGGGAGGGGC-CGGGGT-GAGGCAAGGG-26M;RC_NM=1;RC_REPC=4;RC_REPS=G;TIER=PANEL;TNC=GTG;TQP=8.679e-05	GT:ABQ:AD:AED:AF:AMBQ:AMMQ:AMQ:DP:MUC:RABQ:RC_CNT:RC_IPC:RC_JIT:RC_QUAL:RSB:SAC:SB:UMI_CNT	./.:34,0:23,0:21,0:0:0:0:33,0:23:0:0:0,0,0,0,23,23:0:0,0:0,0,0,0,371,371:0.174,0.5:0:0.478,0.5:23,0,0,0,0,0	./.:34,34:11,3:22,11:0.214:22:24:38,31:14:3:26:3,0,0,0,11,14:0:0,0:57,0,0,0,221,278:0.636,1:0:0.364,0.75:14,0,0,3,0,0
+1	136635	.	T	G	84	maxGermlineRelQual;maxGermlineVAF	MED=42;MQF=3.2;RC_INFO=136622-13-TGGGAGGGGC-CGGGGT-GAGGCAAGGG-26M;RC_NM=1;RC_REPC=4;RC_REPS=G;TIER=PANEL;TNC=GTG;TQP=3.936e-09	GT:ABQ:AD:AED:AF:AMBQ:AMMQ:AMQ:DP:MUC:RABQ:RC_CNT:RC_IPC:RC_JIT:RC_QUAL:RSB:SAC:SB:UMI_CNT	./.:34,33:12,3:23,16:0.2:21:28:27,33:15:3:19:3,0,0,0,12,15:0:0,0:62,0,0,0,186,248:0.167,0.667:0:0.25,0.667:15,0,0,3,0,0	./.:34,35:8,5:22,20:0.385:23:28:27,35:13:3:30:5,0,0,0,8,13:1:0,0:88,0,0,0,98,186:0.625,0.429:0:0.25,0.571:13,0,0,5,0,0
+1	136848	.	G	A	102	maxGermlineRelQual;maxGermlineVAF	MED=48;MQF=10.29;RC_INFO=136836-12-GCAAGGGGCT-CGAGC-TGACCTCTCT-25M;RC_NM=1;TIER=PANEL;TNC=GGG;TQP=6.249e-11	GT:ABQ:AD:AED:AF:AMBQ:AMMQ:AMQ:DP:MUC:RABQ:RC_CNT:RC_IPC:RC_JIT:RC_QUAL:RSB:SAC:SB:UMI_CNT	./.:35,36:8,2:26,13:0.2:24:8:18,10:10:3:28:2,0,0,0,8,10:0:0,0:16,0,0,0,96,112:0.222,0.5:0:0.25,0.333:10,0,0,2,0,0	./.:34,35:15,7:23,16:0.318:22:35:30,35:22:3:34:6,1,0,0,15,22:0:0,0:126,17,0,0,194,337:0.235,0:0:0.8,0.286:22,0,0,7,0,0
+1	136934	.	G	A	39	maxGermlineRelQual;maxGermlineVAF	MED=16;MQF=4;RC_INFO=136922-12-GGCCGGTGTG-AGACA-AGGGGCTCGG-25M;RC_NM=1;TIER=PANEL;TNC=GGC;TQP=0.0001323	GT:ABQ:AD:AED:AF:AMBQ:AMMQ:AMQ:DP:MUC:RABQ:RC_CNT:RC_IPC:RC_JIT:RC_QUAL:RSB:SAC:SB:UMI_CNT	./.:34,30:13,1:26,34:0.071:18:60:36,60:14:1:30:1,0,0,0,13,14:0:0,0:18,0,0,0,223,241:0.154,0:0:0.692,0:14,0,0,1,0,0	./.:34,34:13,3:22,12:0.188:22:29:42,48:16:3:30:3,0,0,0,13,16:1:0,0:53,0,0,0,228,281:0.231,0.5:0:0.385,0.5:16,0,0,3,0,0
+1	137205	.	G	A	50	maxGermlineRelQual;maxGermlineVAF	MED=49;MQF=23.33;RC_INFO=137193-12-TGACCTCTGT-CCACG-TGGGAGGGGC-25M;RC_NM=1;TIER=PANEL;TNC=CGC;TQP=1.034e-05	GT:ABQ:AD:AED:AF:AMBQ:AMMQ:AMQ:DP:MUC:RABQ:RC_CNT:RC_IPC:RC_JIT:RC_QUAL:RSB:SAC:SB:UMI_CNT	./.:34,34:6,3:25,30:0.273:22:48:39,53:11:3:34:3,0,0,0,6,11:0:0,0:67,0,0,0,56,146:0.444,1:0:0.625,0.333:11,0,0,3,0,0	./.:33,35:6,3:29,33:0.333:23:48:46,53:9:3:34:3,0,0,0,6,9:0:0,0:68,0,0,0,123,191:0,1:0:0.333,1:9,0,0,3,0,0
+1	138980	.	G	T	62	maxGermlineRelQual	MED=46;MQF=18.55;RC_INFO=138968-12-CATAGGCCAC-CATGA-GGCAGCAGTT-25M;RC_NM=1;TIER=PANEL;TNC=AGG;TQP=5.89e-07	GT:ABQ:AD:AED:AF:AMBQ:AMMQ:AMQ:DP:MUC:RABQ:RC_CNT:RC_IPC:RC_JIT:RC_QUAL:RSB:SAC:SB:UMI_CNT	./.:35,34:31,1:34,30:0.031:22:53:60,60:32:2:23:1,0,0,0,31,32:0:0,0:22,0,0,0,717,739:0.412,1:0:0.484,0.5:32,0,0,1,0,0	./.:34,34:21,5:32,33:0.192:22:59:60,60:26:3:32:5,0,0,0,21,26:0:0,0:108,0,0,0,465,573:0.5,1:0:0.524,0.5:26,0,0,5,0,0
